@@ -2,8 +2,8 @@
   "version": 3,
   "file": "bundle.css",
   "sources": [
-    "../../App.svelte",
-    "../../Eye.svelte"
+    "App.svelte",
+    "Eye.svelte"
   ],
   "sourcesContent": [
     "<script>\n  import Eye from \"./Eye.svelte\";\n\n  function random_color() {\n    let h = Math.random() * 360\n    let s = Math.round(50 + Math.random() * 50)\n    let l = Math.round(30 + Math.random() * 40)\n    return `hsl(${h}, ${s}%, ${l}%)`\n  }\n\n  function eye_distance(eye1, eye2) {\n    let dx = eye1.x - eye2.x;\n    let dy = eye1.y - eye2.y;\n    return Math.sqrt((dx * dx) + (dy * dy))\n  }\n\n  function can_place_eye(new_eye) {\n    return eyes.every(eye =>\n      eye_distance(eye, new_eye) >= eye.sz + new_eye.sz + 5\n    )\n  }\n\n  function onmousemove(event) {\n    let svg = document.getElementById(\"eyes\")\n    let rect = svg.getBoundingClientRect()\n    mx = event.pageX - rect.x\n    my = event.pageY - rect.y\n  }\n\n  let eyes = [];\n  let wh = window.innerHeight;\n  let ww = window.innerWidth;\n  // init it to something random if mouse starts outside window\n  let mx = Math.random() * ww;\n  let my = Math.random() * wh;\n\n  [...Array.from({ length: 1000 })].forEach(_ => {\n    let sz = 20 + Math.random() * 60\n    let x = sz + Math.random() * (ww - 2 * sz)\n    let y = sz + Math.random() * (wh - 2 * sz)\n    let color = random_color()\n    let new_eye = {x, y, sz, color}\n    if (can_place_eye(new_eye)) {\n      eyes.push(new_eye)\n    }\n  });\n</script>\n\n<svg id=\"eyes\" on:mousemove={onmousemove}>\n  {#each eyes as {x,y,sz,color}}\n    <Eye {x} {y} {mx} {my} {sz} {color}/>\n  {/each}\n</svg>\n\n<style>\n  svg {\n    width: 100vw;\n    height: 100vh;\n    display: block;\n    background-color: #aaa;\n  }\n</style>\n",
